@@ -1,0 +1,154 @@
+﻿@model IEnumerable<Tamrin04.Entities.Products>
+
+@{
+    ViewData["Title"] = "Index";
+    int pageItemCount = Convert.ToInt32(ViewData["PageItemCount"]);
+    int currentPage = (int)ViewData["CurrentPage"];
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        @for (int i = 1; i <= pageItemCount; i++)
+        {
+            if (currentPage == i)
+            {
+                <li class="page-item active"><a class="page-link" href="/Product/Index?page=@i">@i</a></li>
+            }
+            else
+            {
+                <li class="page-item"><a class="page-link" href="/Product/Index?page=@i">@i</a></li>
+            }
+
+        }
+    </ul>
+</nav>
+<table class="table" id="productTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SupplierId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CategoryId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuantityPerUnit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnitPrice)
+            </th>
+           
+            <th>
+                @Html.DisplayNameFor(model => model.Discontinued)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SupplierId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CategoryId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QuantityPerUnit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnitPrice)
+            </td>
+          
+            <td>
+                @Html.DisplayFor(modelItem => item.Discontinued)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<div id="myPagination"></div>
+
+@section Scripts  {
+    <script>
+        $(function() {
+            $('#myPagination').pagination({
+                items: @ViewData["TotalItemCount"],
+                itemsOnPage: @ViewData["PageItemSize"],
+                cssStyle: 'light-theme',
+                onPageClick(pageNumber, event) {
+                    //alert(pageNumber);
+                     //window.location.href = `/Product/Index?page=${pageNumber}`;
+                    //window.location.href = '/Product/Index?page=' + pageNumber;
+
+                    //ajax
+                    const apiUrl = `/Product/GetProducts?pageNumber=${pageNumber}`;
+                    $.get(apiUrl, function (result) {
+                        console.log(result);
+                        let tbody = $('#productTable tbody');
+                        tbody.html('');
+                        for (var i = 0; i < result.length; i++) {
+                            let item = result[i];
+                            let tr = `<tr>
+                                    <td>
+                                      ${item.productId}
+                                    </td>
+                                    <td>
+                                        ${item.productName}
+                                    </td>
+                                    <td>
+                                        ${item.supplierId}
+                                    </td>
+                                    <td>
+                                        ${item.categoryId}
+                                    </td>
+                                    <td>
+                                        ${item.quantityPerUnit}
+                                    </td>
+                                    <td>
+                                        ${item.unitPrice}
+                                    </td>
+          
+                                    <td>
+                                        ${item.discontinued}
+                                    </td>
+                                    <td>
+                                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                                    </td>
+                                </tr>`;
+
+                            tbody.append(tr);
+                        }
+                    })
+                }
+
+            });
+        });
+    </script>
+
+}
